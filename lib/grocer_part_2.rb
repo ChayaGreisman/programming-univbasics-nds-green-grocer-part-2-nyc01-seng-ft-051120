@@ -2,23 +2,27 @@ require_relative './part_1_solution.rb'
 
 
 def apply_coupons(cart, coupons)
-  cart.each do |each_item_hash|
-    coupons.each do |each_coupon_hash|
-      if each_item_hash[:item] == each_coupon_hash[:item] && each_item_hash[:count] >= each_coupon_hash[:num]
+  coupons.each do |each_coupon_hash|
+    cart_item = find_item_by_name_in_collection(each_coupon_hash[:item],cart)
+    couponed_item_name = "#{each_coupon_hash[:item]} W/COUPON"
+    cart_item_with_coupon = find_item_by_name_in_collection(couponed_item_name,cart)
+    
+      if cart_item && cart_item[:count] >= each_coupon_hash[:num]
         
-        each_item_hash[:price] = each_coupon_hash[:cost] / each_coupon_hash[:number]
-        
-        each_item_hash[:item] = "#{each_item_hash[:item]} W/COUPON"
-        
-        cart << each_item_hash
-      end
-        
-        if each_item_hash[:item] = "#{each_coupon_hash[:item]} W/COUPON"
-          
-          each_item_hash[:count] += each_coupon_hash[:num]
+        if cart_item_with_coupon
+          cart_item_with_coupon[:count] += each_coupon_hash[:num]
+          cart_item[:count] -= each_coupon_hash[:num]
+        else
+          cart_item_with_coupon = {
+            :item => couponed_item_name,
+            :price => each_coupon_hash[:cost] / each_coupon_hash[:num],
+            :count => each_coupon_hash[:num],
+            :clearance => cart_item[:clearance]
+          }
+          cart << cart_item_with_coupon
+          cart_item[:count] -= each_coupon_hash[:num]
         end
-      
-    end
+      end
   end
 cart
 end
@@ -51,6 +55,7 @@ def checkout(cart, coupons)
   # BEFORE it begins the work of calculating the total (or else you might have
   # some irritated customers
   
+  total = 0
   
   final_cart.each do |each_item_hash|
   total += each_item_hash[:price] * each_item_hash[:count]
