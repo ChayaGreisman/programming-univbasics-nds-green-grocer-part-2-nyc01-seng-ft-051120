@@ -45,10 +45,10 @@ def checkout(cart, coupons)
   
   total = 0
   final_cart.each do |each_item_hash|
-  total += each_item_hash[:price] * each_item_hash[:count]
+    total += each_item_hash[:price] * each_item_hash[:count]
   end
   if total > 100
-      total = total - (total * 0.1)
+    total = total - (total * 0.1)
   end
   total 
 end
